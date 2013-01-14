@@ -53,6 +53,10 @@ require 'xeroizer/models/tax_rate'
 require 'xeroizer/models/tracking_category'
 require 'xeroizer/models/tracking_category_child'
 require 'xeroizer/models/journal_line_tracking_category'
+require 'xeroizer/models/user'
+require 'xeroizer/models/receipt'
+require 'xeroizer/models/expense_claim'
+
 
 require 'xeroizer/report/factory'
 

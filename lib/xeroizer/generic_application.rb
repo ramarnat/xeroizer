@@ -26,6 +26,9 @@ module Xeroizer
     record :TaxRate
     record :TrackingCategory
     record :BankTransaction
+    record :User
+    record :Receipt
+    record :ExpenseClaim
 
     report :AgedPayablesByContact
     report :AgedReceivablesByContact
