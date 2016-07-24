@@ -6,22 +6,22 @@ require 'xeroizer/logging'
 
 module Xeroizer
   module Record
-    
+
     class Base
-      
+
       include ClassLevelInheritableAttributes
       class_inheritable_attributes :fields, :possible_primary_keys, :primary_key_name, :summary_only, :validators
-                 
+
       attr_reader :attributes
       attr_reader :parent
       attr_accessor :errors
       attr_accessor :complete_record_downloaded
-      
+
       include ModelDefinitionHelper
       include RecordAssociationHelper
       include ValidationHelper
       include XmlHelper
-      
+
       class << self
 
         # Build a record with attributes set to the value of attributes.
@@ -32,24 +32,26 @@ module Xeroizer
           end
           record
         end
-        
+
+
+
       end
-      
+
       public
-      
+
         def initialize(parent)
           @parent = parent
           @attributes = {}
         end
-        
+
         def new_model_class(model_name)
           Xeroizer::Record.const_get("#{model_name}Model".to_sym).new(parent.application, model_name.to_s)
         end
-        
+
         def [](attribute)
           self.send(attribute)
         end
-        
+
         def []=(attribute, value)
           self.send("#{attribute}=".to_sym, value)
         end
@@ -65,11 +67,11 @@ module Xeroizer
           self.attributes = attributes
           save
         end
-        
+
         def new_record?
           id.nil?
         end
-        
+
         # Check to see if the complete record is downloaded.
         def complete_record_downloaded?
           if !!self.class.list_contains_summary_only?
@@ -78,7 +80,7 @@ module Xeroizer
             true
           end
         end
-        
+
         # Downloads the complete record if we only have a summary of the record.
         def download_complete_record!
           record = self.parent.find(self.id)
@@ -86,7 +88,7 @@ module Xeroizer
           @complete_record_downloaded = true
           self
         end
-        
+
         def save
           return false unless valid?
           if new_record?
@@ -104,37 +106,37 @@ module Xeroizer
           end.join(", ")
           "#<#{self.class} #{attribute_string}>"
         end
-                
+
       protected
-      
+
         # Attempt to create a new record.
         def create
           request = to_xml
           log "[CREATE SENT] (#{__FILE__}:#{__LINE__}) #{request}"
-          
+
           response = parent.http_put(request)
           log "[CREATE RECEIVED] (#{__FILE__}:#{__LINE__}) #{response}"
-          
+
           parse_save_response(response)
         end
-        
+
         # Attempt to update an existing record.
         def update
           if self.class.possible_primary_keys && self.class.possible_primary_keys.all? { | possible_key | self[possible_key].nil? }
             raise RecordKeyMustBeDefined.new(self.class.possible_primary_keys)
           end
-          
+
           request = to_xml
-          
+
           log "[UPDATE SENT] (#{__FILE__}:#{__LINE__}) \r\n#{request}"
-          
+
           response = parent.http_post(request)
 
           log "[UPDATE RECEIVED] (#{__FILE__}:#{__LINE__}) \r\n#{response}"
 
           parse_save_response(response)
         end
-        
+
         # Parse the response from a create/update request.
         def parse_save_response(response_xml)
           response = parent.parse_response(response_xml)
@@ -148,8 +150,8 @@ module Xeroizer
         def log(what)
           Xeroizer::Logging::Log.info what
         end
-                     
+
     end
-    
+
   end
 end

@@ -13,17 +13,18 @@ module Xeroizer
 
       guid      :expense_claim_id
       string    :status      
+      datetime  :created_date_utc, :api_name => 'CreatedDateUTC'
       datetime  :updated_date_utc, :api_name => 'UpdatedDateUTC'
       
       belongs_to  :user
-      has_many  :receipt
-
-      def receipt_id
-        receipt.id if receipt
-      end
+      has_many  :receipts
       
       def user_id
         user.id if user
+      end
+      
+      def total 
+         sum = (receipts || []).inject(BigDecimal.new('0')) { | sum, receipt | sum + receipt.total; puts "Total: #{Integer(sum)}" }
       end
     end
   end

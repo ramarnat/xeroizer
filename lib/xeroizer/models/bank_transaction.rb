@@ -4,7 +4,7 @@ require 'xeroizer/models/line_item_sum'
 module Xeroizer
   module Record
     class BankTransactionModel < BaseModel
-      set_permissions :read
+      set_permissions :read, :write, :update
     end
 
     class BankTransaction < Base
@@ -21,6 +21,7 @@ module Xeroizer
       date :fully_paid_on_date
       string :reference
       string :bank_transaction_id, :api_name => "BankTransactionID"
+      string :status
       boolean :is_reconciled
 
       alias_method :reconciled?, :is_reconciled

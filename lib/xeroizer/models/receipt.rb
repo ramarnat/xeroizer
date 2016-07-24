@@ -23,6 +23,7 @@ module Xeroizer
       
       guid      :receipt_id
       date      :date
+      string    :reference
       
       string    :status
       string    :line_amount_types
@@ -40,6 +41,10 @@ module Xeroizer
       validates_inclusion_of :line_amount_types, :in => LINE_AMOUNT_TYPES, :unless => :new_record?
       validates_associated :contact
 
+      def total 
+        sum = (line_items || []).inject(BigDecimal.new('0')) { | sum, line_item | sum + line_item.line_amount }
+        return sum
+      end
       
       def contact_id
         contact.id if contact
